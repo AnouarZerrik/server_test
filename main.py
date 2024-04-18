@@ -50,6 +50,15 @@ async def generate_response(query: str , session_id: int):
 async def read_root():
     return {"message": "Hello To Gemini Pro API"}
 
+@app.get("/sessions_list/")
+async def read_root():
+    return {"sessions_list": list(models.keys())}
+
+@app.get("/remove_all/")
+async def read_root():
+    models.clear()
+    return {"response": 'All sessions removed successfully'}
+
 @app.get("/remove/")
 async def remove_session(session_id: int):
     if session_id in models :
