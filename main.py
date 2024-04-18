@@ -4,7 +4,7 @@ import google.generativeai as genai
 
 # Initialize GenAI API
 genai.configure(api_key='AIzaSyBLdPt9xCo9Ia1vpBuxfCl9EMq0FqXByyI')
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-1.5-pro-latest')
 
 # Define a data model for the request body
 class Query(BaseModel):
@@ -21,7 +21,11 @@ async def generate_response(query: str):
         return {"response": response.text , "Prompt" :  query}
     except Exception as e:
         return {"error": str(e)}
-    
+
+@app.get("/")
+async def read_root():
+    return {"message": "Hello To Gemini Pro API"}
+
 
 # Run the server with uvicorn
 if __name__ == "__main__":
