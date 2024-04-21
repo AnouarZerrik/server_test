@@ -2,3 +2,4 @@ fastapi
 pydantic
 uvicorn
 google-generativeai
+bs4

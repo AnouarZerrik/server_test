@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI , Request
 from pydantic import BaseModel
 import google.generativeai as genai
-
+import re , requests
+from bs4 import BeautifulSoup
 # Initialize GenAI API
 genai.configure(api_key='AIzaSyBLdPt9xCo9Ia1vpBuxfCl9EMq0FqXByyI')
 generation_config = {
@@ -45,7 +46,34 @@ async def generate_response(query: str , session_id: int):
     except Exception as e:
         return {"error": str(e)}
     
+@app.get("/get_emails_from_url/")
+async def extract_emails(url : str):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    text = soup.get_text()
+    pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    emails = re.findall(pattern, text)
+    return { "emails": emails , 'count' : len(emails)}
 
+    
+    
+    
+    
+@app.post("/generate_long_text/")
+async def generate_response(request: Request):
+    # global models
+    # if session_id not in models:
+    #     models[session_id] = model.start_chat(history=[])
+    
+    try:
+        data = await request.json()
+        query = data["query"]  # assuming the query is sent as a JSON object with a "query" key
+        response = model.generate_content(query)
+        return {"response": response.text}
+    except Exception as e:
+        return {"error": str(e)}
+    
+    
 @app.get("/")
 async def read_root():
     return {"message": "Hello To Gemini Pro API"}
